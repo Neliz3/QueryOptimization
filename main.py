@@ -1,36 +1,18 @@
-import mysql.connector
 import uuid
 from faker import Faker
-from dotenv import load_dotenv
 import random
 from datetime import datetime, timedelta
-import os
+from config import connection
 
-# Load environment variables
-load_dotenv()
-
-# Connection settings
-HOST = os.getenv('host')
-USER = os.getenv('user')
-PASSWORD = os.getenv('password')
-DATABASE = os.getenv('database')
-
-
-# Connect to the MySQL database
-connection = mysql.connector.connect(
-    host=HOST,
-    user=USER,
-    password=PASSWORD,
-    database=DATABASE
-)
 
 cursor = connection.cursor()
 fake = Faker()
 
+
 # Insert 1,000,000 rows into opt_clients
 print("Inserting into opt_clients...")
 client_insert_query = """
-    INSERT INTO opt_clients (id, name, surname, email, phone, address, status) 
+    INSERT INTO opt_db.opt_clients (id, name, surname, email, phone, address, status) 
     VALUES (%s, %s, %s, %s, %s, %s, %s)
 """
 clients_data = [
@@ -41,16 +23,16 @@ cursor.executemany(client_insert_query, clients_data)
 connection.commit()
 print("Inserted into opt_clients.")
 
-# Insert 1,000 rows into opt_products
+# Insert 10,000 rows into opt_products
 print("Inserting into opt_products...")
 product_insert_query = """
-    INSERT INTO opt_products (product_name, product_category, description) 
+    INSERT INTO opt_db.opt_products (product_name, product_category, description) 
     VALUES (%s, %s, %s)
 """
 categories = ['Category1', 'Category2', 'Category3', 'Category4', 'Category5']
 products_data = [
     (fake.word(), random.choice(categories), fake.text())
-    for _ in range(1000)
+    for _ in range(10000)
 ]
 cursor.executemany(product_insert_query, products_data)
 connection.commit()
@@ -59,7 +41,7 @@ print("Inserted into opt_products.")
 # Insert 10,000,000 rows into opt_orders
 print("Inserting into opt_orders...")
 order_insert_query = """
-    INSERT INTO opt_orders (order_date, client_id, product_id) 
+    INSERT INTO opt_db.opt_orders (order_date, client_id, product_id) 
     VALUES (%s, %s, %s)
 """
 order_date_start = datetime.now() - timedelta(days=365 * 5)
